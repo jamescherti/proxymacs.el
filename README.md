@@ -45,7 +45,7 @@ The HTTPS proxy host, port, and authentication settings inherit their HTTP equiv
 (setq proxymacs-socks-host "127.0.0.1")
 (setq proxymacs-socks-port 1080) ; accepts integer or string
 (setq proxymacs-socks-version 5) ; 4, 4a, or 5
-(setq proxymacs-no-proxy "^\\(localhost\\|127\\.0\\.0\\.1\\|10\\..*\\|192\\.168\\..*\\)")
+(setq proxymacs-socks-no-proxy "^\\(localhost\\|127\\.0\\.0\\.1\\|10\\..*\\|192\\.168\\..*\\)")
 
 ;; Optional authentication:
 ;; (setq proxymacs-socks-user "my_user")
@@ -61,9 +61,10 @@ The HTTPS proxy host, port, and authentication settings inherit their HTTP equiv
 
 To install *proxymacs* with `straight.el`:
 
-1. If it has not already been done, [add the straight.el bootstrap code](https://github.com/radian-software/straight.el?tab=readme-ov-file#getting-started) to your init file.
+Step 1: If it has not already been done, [add the straight.el bootstrap code](https://github.com/radian-software/straight.el?tab=readme-ov-file#getting-started) to your init file.
 
-2. Add the following code to the Emacs init file:
+Step 2: Add the following code to the Emacs init file:
+
 ```emacs-lisp
 (use-package proxymacs
   :straight (proxymacs
