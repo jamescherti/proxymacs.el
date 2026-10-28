@@ -11,6 +11,7 @@ The **[proxymacs](https://github.com/jamescherti/proxymacs.el)** Emacs package s
 ## Usage
 
 ### HTTP and HTTPS Proxy
+
 ```elisp
 (setq proxymacs-proxy-type 'http) ; 'http is the default
 (setq proxymacs-http-host "127.0.0.1")
@@ -25,6 +26,11 @@ The **[proxymacs](https://github.com/jamescherti/proxymacs.el)** Emacs package s
 ;; (setq proxymacs-http-realm "proxy")
 ;; (setq proxymacs-http-user "my_user")
 ;; (setq proxymacs-http-password "my_password")
+
+;; Optional HTTPS authentication (each nil value falls back to its HTTP equivalent):
+;; (setq proxymacs-https-realm "https_proxy")
+;; (setq proxymacs-https-user "my_https_user")
+;; (setq proxymacs-https-password "my_https_password")
 
 ;; Enable the proxymacs mode
 (proxymacs-mode)
@@ -127,6 +133,9 @@ doom sync
 - `proxymacs-http-realm`: Authentication realm used by the HTTP proxy (default: `"Proxy"`).
 - `proxymacs-http-user`: Username for proxy authentication (default: `nil`).
 - `proxymacs-http-password`: Password for proxy authentication (default: `nil`).
+- `proxymacs-https-realm`: Authentication realm used by the HTTPS proxy. When `nil`, `proxymacs-http-realm` is used (default: `nil`).
+- `proxymacs-https-user`: Username for HTTPS proxy authentication. When `nil`, `proxymacs-http-user` is used (default: `nil`).
+- `proxymacs-https-password`: Password for HTTPS proxy authentication. When `nil`, `proxymacs-http-password` is used (default: `nil`).
 
 - `proxymacs-http-no-proxy`: Regexp or list of regexps matching hosts that bypass the Emacs URL proxy. When `nil`, `proxymacs-no-proxy` is used (default: `nil`).
 
