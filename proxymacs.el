@@ -1,10 +1,10 @@
-;;; proxy-config.el --- An Emacs Lisp package that simplifies HTTP and HTTPS proxy configuration with optional authentication and automatic subprocess integration. -*- lexical-binding: t; -*-
+;;; proxymacs.el --- An Emacs Lisp package that simplifies HTTP and HTTPS proxy configuration with optional authentication and automatic subprocess integration. -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2026 James Cherti
 
 ;; Author: James Cherti <https://www.jamescherti.com/contact/>
 ;; Version: 0.9.9
-;; URL: https://github.com/jamescherti/proxy-config.el
+;; URL: https://github.com/jamescherti/proxymacs.el
 ;; Keywords: convenience
 ;; Package-Requires: ((emacs "24.1"))
 ;; SPDX-License-Identifier: GPL-3.0-or-later
@@ -27,40 +27,40 @@
 
 ;;; Code:
 
-(defgroup proxy-config nil
+(defgroup proxymacs nil
   "An Emacs Lisp package that simplifies HTTP and HTTPS proxy configuration with optional authentication and automatic subprocess integration."
-  :group 'proxy-config
-  :prefix "proxy-config-"
+  :group 'proxymacs
+  :prefix "proxymacs-"
   :link '(url-link
           :tag "Github"
-          "https://github.com/jamescherti/proxy-config.el"))
+          "https://github.com/jamescherti/proxymacs.el"))
 
-(defcustom proxy-config-verbose nil
+(defcustom proxymacs-verbose nil
   "Enable displaying verbose messages."
   :type 'boolean
-  :group 'proxy-config)
+  :group 'proxymacs)
 
-(defun proxy-config--message (&rest args)
+(defun proxymacs--message (&rest args)
   "Display a message with the same ARGS arguments as `message'."
-  (apply #'message (concat "[proxy-config] " (car args)) (cdr args)))
+  (apply #'message (concat "[proxymacs] " (car args)) (cdr args)))
 
-(defmacro proxy-config--verbose-message (&rest args)
+(defmacro proxymacs--verbose-message (&rest args)
   "Display a verbose message with the same ARGS arguments as `message'."
   (declare (indent 0) (debug t))
   `(progn
-     (when proxy-config-verbose
-       (proxy-config--message
+     (when proxymacs-verbose
+       (proxymacs--message
         (concat ,(car args)) ,@(cdr args)))))
 
 ;;;###autoload
-(define-minor-mode proxy-config-mode
-  "Toggle `proxy-config-mode'."
+(define-minor-mode proxymacs-mode
+  "Toggle `proxymacs-mode'."
   :global t
-  :lighter " proxy-config"
-  :group 'proxy-config
-  (if proxy-config-mode
+  :lighter " proxymacs"
+  :group 'proxymacs
+  (if proxymacs-mode
       t
     t))
 
-(provide 'proxy-config)
-;;; proxy-config.el ends here
+(provide 'proxymacs)
+;;; proxymacs.el ends here

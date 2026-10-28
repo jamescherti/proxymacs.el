@@ -1,6 +1,6 @@
-# proxy-config.el
-![Build Status](https://github.com/jamescherti/proxy-config.el/actions/workflows/melpazoid.yml/badge.svg)
-![License](https://img.shields.io/github/license/jamescherti/proxy-config.el)
+# proxymacs.el
+![Build Status](https://github.com/jamescherti/proxymacs.el/actions/workflows/melpazoid.yml/badge.svg)
+![License](https://img.shields.io/github/license/jamescherti/proxymacs.el)
 ![](https://jamescherti.com/misc/made-for-gnu-emacs.svg)
 
 - Author: James Cherti <[https://www.jamescherti.com/](https://www.jamescherti.com/)>
@@ -12,42 +12,42 @@ An Emacs package that simplifies HTTP and HTTPS proxy configuration with optiona
 
 ### Emacs: use-package and straight (Emacs version < 30)
 
-To install *proxy-config* with `straight.el`:
+To install *proxymacs* with `straight.el`:
 
 1. If it hasn't already been done, [add the straight.el bootstrap code](https://github.com/radian-software/straight.el?tab=readme-ov-file#getting-started) to your init file.
 2. Add the following code to the Emacs init file:
 ```emacs-lisp
-(use-package proxy-config
-  :straight (proxy-config
+(use-package proxymacs
+  :straight (proxymacs
              :type git
              :host github
-             :repo "jamescherti/proxy-config.el"))
+             :repo "jamescherti/proxymacs.el"))
 ```
 
 ### Alternative installation: use-package and :vc (Built-in feature in Emacs version >= 30)
 
-To install *proxy-config* with `use-package` and `:vc` (Emacs >= 30):
+To install *proxymacs* with `use-package` and `:vc` (Emacs >= 30):
 
 ``` emacs-lisp
-(use-package proxy-config
-  :vc (:url "https://github.com/jamescherti/proxy-config.el"
+(use-package proxymacs
+  :vc (:url "https://github.com/jamescherti/proxymacs.el"
        :rev :newest))
 ```
 
 ### Alternative installation: Doom Emacs
 
-Here is how to install *proxy-config* on Doom Emacs:
+Here is how to install *proxymacs* on Doom Emacs:
 
 1. Add to the `~/.doom.d/packages.el` file:
 ```elisp
-(package! proxy-config
+(package! proxymacs
   :recipe
-  (:host github :repo "jamescherti/proxy-config.el"))
+  (:host github :repo "jamescherti/proxymacs.el"))
 ```
 
 2. Add to `~/.doom.d/config.el`:
 ```elisp
-(after! proxy-config
+(after! proxymacs
   ;; TODO: setq options
   ;; TODO: Load the mode here
   )
@@ -60,7 +60,7 @@ doom sync
 
 ## Author and License
 
-The *proxy-config* Emacs package has been written by [James Cherti](https://www.jamescherti.com/) and is distributed under terms of the GNU General Public License version 3, or, at your choice, any later version.
+The *proxymacs* Emacs package has been written by [James Cherti](https://www.jamescherti.com/) and is distributed under terms of the GNU General Public License version 3, or, at your choice, any later version.
 
 Copyright (C) 2026 James Cherti
 
@@ -68,4 +68,4 @@ This program is free software: you can redistribute it and/or modify it under th
 
 ## Links
 
-- [proxy-config.el @GitHub](https://github.com/jamescherti/proxy-config.el)
+- [proxymacs.el @GitHub](https://github.com/jamescherti/proxymacs.el)
