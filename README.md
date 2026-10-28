@@ -6,7 +6,7 @@
 - Author: James Cherti <[https://www.jamescherti.com/](https://www.jamescherti.com/)>
 - License: GPL
 
-An Emacs package that simplifies HTTP, HTTPS, and SOCKS proxy configuration with optional authentication.
+The **[proxymacs.elGitHub](https://github.com/jamescherti/proxymacs.el)** Emacs package simplifies HTTP, HTTPS, and SOCKS proxy configuration.
 
 ## Usage
 
@@ -20,7 +20,7 @@ An Emacs package that simplifies HTTP, HTTPS, and SOCKS proxy configuration with
 ;; (setq proxymacs-http-user "my_user")
 ;; (setq proxymacs-http-password "my_password")
 
-;; Enable the mode:
+;; Enable the proxymacs mode
 (proxymacs-mode)
 ```
 
@@ -36,7 +36,7 @@ An Emacs package that simplifies HTTP, HTTPS, and SOCKS proxy configuration with
 ;; (setq proxymacs-socks-user "my_user")
 ;; (setq proxymacs-socks-password "my_password")
 
-;; Enable the mode:
+;; Enable the proxymacs mode
 (proxymacs-mode)
 ```
 

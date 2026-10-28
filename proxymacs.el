@@ -81,7 +81,7 @@ For example:
 
 (defcustom proxymacs-socks-port 1080
   "SOCKS proxy server port."
-  :type 'integer
+  :type '(choice integer string)
   :group 'proxymacs)
 
 (defcustom proxymacs-socks-version 5
@@ -171,10 +171,13 @@ For example:
   "Configure Emacs `url' and `socks' proxy settings."
   (when (and proxymacs-socks-host proxymacs-socks-port)
     (require 'socks)
-    (let ((version (or proxymacs-socks-version 5)))
+    (let ((version (or proxymacs-socks-version 5))
+          (port (if (stringp proxymacs-socks-port)
+                    (string-to-number proxymacs-socks-port)
+                  proxymacs-socks-port)))
       (setq socks-server (list "Default server"
                                proxymacs-socks-host
-                               proxymacs-socks-port
+                               port
                                version))
       (setq socks-noproxy
             (cond ((null proxymacs-socks-no-proxy) nil)
