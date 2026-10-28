@@ -241,7 +241,6 @@ For example:
         (raw-port proxymacs-socks-port)
         (no-proxy proxymacs-socks-no-proxy))
     (when (and host raw-port)
-      (require 'socks)
       (let ((version (or proxymacs-socks-version 5))
             (port (if (stringp raw-port)
                       (string-to-number raw-port)
