@@ -1,4 +1,4 @@
-# proxymacs.el
+# proxymacs.el - Emacs proxy configuration
 ![Build Status](https://github.com/jamescherti/proxymacs.el/actions/workflows/melpazoid.yml/badge.svg)
 ![License](https://img.shields.io/github/license/jamescherti/proxymacs.el)
 ![](https://jamescherti.com/misc/made-for-gnu-emacs.svg)
