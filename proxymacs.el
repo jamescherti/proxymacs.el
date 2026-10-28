@@ -183,6 +183,8 @@ For example:
 
 (defun proxymacs--enable-http ()
   "Configure Emacs `url' HTTP and HTTPS proxy settings."
+  (unless (or proxymacs-http-host proxymacs-https-host)
+    (user-error "[proxymacs] `proxymacs-http-host' or `proxymacs-https-host' must be set"))
   (let* ((http-proxy-host-port (when proxymacs-http-host
                                  (if proxymacs-http-port
                                      (format "%s:%s" proxymacs-http-host proxymacs-http-port)
@@ -234,23 +236,24 @@ For example:
 
 (defun proxymacs--enable-socks ()
   "Configure Emacs `url' and `socks' proxy settings."
-  (when (and proxymacs-socks-host proxymacs-socks-port)
-    (let ((version (or proxymacs-socks-version 5))
-          (port (if (stringp proxymacs-socks-port)
-                    (string-to-number proxymacs-socks-port)
-                  proxymacs-socks-port)))
-      (setq socks-server (list "Default server"
-                               proxymacs-socks-host
-                               port
-                               version))
-      (setq socks-noproxy
-            (cond ((stringp proxymacs-socks-no-proxy)
-                   (list proxymacs-socks-no-proxy))
-                  ((listp proxymacs-socks-no-proxy)
-                   proxymacs-socks-no-proxy)))
-      (setq socks-username (or proxymacs-socks-user (user-login-name)))
-      (setq socks-password proxymacs-socks-password)
-      (setq url-gateway-method 'socks))))
+  (unless (and proxymacs-socks-host proxymacs-socks-port)
+    (user-error "[proxymacs] `proxymacs-socks-host' and `proxymacs-socks-port' must be set"))
+  (let ((version (or proxymacs-socks-version 5))
+        (port (if (stringp proxymacs-socks-port)
+                  (string-to-number proxymacs-socks-port)
+                proxymacs-socks-port)))
+    (setq socks-server (list "Default server"
+                             proxymacs-socks-host
+                             port
+                             version))
+    (setq socks-noproxy
+          (cond ((stringp proxymacs-socks-no-proxy)
+                 (list proxymacs-socks-no-proxy))
+                ((listp proxymacs-socks-no-proxy)
+                 proxymacs-socks-no-proxy)))
+    (setq socks-username (or proxymacs-socks-user (user-login-name)))
+    (setq socks-password proxymacs-socks-password)
+    (setq url-gateway-method 'socks)))
 
 (defun proxymacs--disable-socks ()
   "Restore Emacs `url' and `socks' proxy settings to default values."
@@ -266,9 +269,11 @@ For example:
     ('nil
      (user-error "[proxymacs] No proxy type configured. Set `proxymacs-proxy-type' to `http' or `socks'"))
     ('http
+     (proxymacs--disable-socks)
      (proxymacs--enable-http)
      (proxymacs--verbose-message "Proxy configuration enabled."))
     ('socks
+     (proxymacs--disable-http)
      (proxymacs--enable-socks)
      (proxymacs--verbose-message "Proxy configuration enabled."))
     (_
@@ -288,7 +293,11 @@ For example:
   :lighter " ProxyM"
   :group 'proxymacs
   (if proxymacs-mode
-      (proxymacs--enable)
+      (condition-case err
+          (proxymacs--enable)
+        (error
+         (setq proxymacs-mode nil)
+         (signal (car err) (cdr err))))
     (proxymacs--disable)))
 
 (provide 'proxymacs)
