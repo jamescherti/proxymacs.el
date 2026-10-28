@@ -13,16 +13,20 @@ The **[proxymacs](https://github.com/jamescherti/proxymacs.el)** Emacs package s
 ### HTTP and HTTPS Proxy
 ```elisp
 (setq proxymacs-proxy-type 'http) ; 'http is the default
-(setq proxymacs-http-host "127.0.0.1")
-(setq proxymacs-http-port 3128) ; accepts integer or string
-(setq proxymacs-http-realm "proxy")
+(setq proxymacs-host "127.0.0.1")
+(setq proxymacs-port 3128) ; accepts integer or string
 (setq proxymacs-http-no-proxy "^\\(localhost\\|127.0.0.1\\|10\\..*\\|192\\.168\\..*\\)")
 
-;; Optional HTTPS configuration (falls back to HTTP host and port when nil):
+;; Optional HTTP-specific host/port (overrides `proxymacs-host` and `proxymacs-port`):
+;; (setq proxymacs-http-host "127.0.0.1")
+;; (setq proxymacs-http-port 3128)
+
+;; Optional HTTPS configuration (falls back to HTTP or global host and port when nil):
 ;; (setq proxymacs-https-host "127.0.0.1")
 ;; (setq proxymacs-https-port 3128)
 
 ;; Optional authentication:
+;; (setq proxymacs-http-realm "proxy")
 ;; (setq proxymacs-http-user "my_user")
 ;; (setq proxymacs-http-password "my_password")
 
@@ -34,10 +38,14 @@ The **[proxymacs](https://github.com/jamescherti/proxymacs.el)** Emacs package s
 
 ```elisp
 (setq proxymacs-proxy-type 'socks)
-(setq proxymacs-socks-host "127.0.0.1")
-(setq proxymacs-socks-port 1080) ; accepts integer or string
+(setq proxymacs-host "127.0.0.1")
+(setq proxymacs-port 1080) ; accepts integer or string
 (setq proxymacs-socks-version 5) ; 5 or 4
 (setq proxymacs-socks-no-proxy "^\\(localhost\\|127.0.0.1\\|10\\..*\\|192\\.168\\..*\\)")
+
+;; Optional SOCKS-specific host/port (overrides `proxymacs-host` and `proxymacs-port`):
+;; (setq proxymacs-socks-host "127.0.0.1")
+;; (setq proxymacs-socks-port 1080)
 
 ;; Optional authentication:
 ;; (setq proxymacs-socks-user "my_user")
@@ -103,16 +111,26 @@ doom sync
 
 ## Customization
 
-### HTTP
+### General
+
+- `proxymacs-proxy-type`: The active proxy type. Accepts `'http` (for HTTP and HTTPS) or `'socks` (for SOCKS) (default: `'http`).
+
+- `proxymacs-host`: Default proxy server hostname or IP address for HTTP, HTTPS, and SOCKS. Can be overridden by `proxymacs-http-host`, `proxymacs-https-host`, or `proxymacs-socks-host` (default: `nil`).
+
+- `proxymacs-port`: Default proxy server port for HTTP, HTTPS, and SOCKS, integer or string. Can be overridden by `proxymacs-http-port`, `proxymacs-https-port`, or `proxymacs-socks-port` (default: `nil`).
 
 - `proxymacs-proxy-type`: The active proxy type. Accepts `'http` (for HTTP and HTTPS) or `'socks` (for SOCKS). (default: `'http`).
 
 ### HTTP
 
-- `proxymacs-http-host`: HTTP proxy server hostname or IP address (default: `nil`).
-- `proxymacs-http-port`: HTTP proxy server port, integer or string (default: `8080`).
-- `proxymacs-https-host`: HTTPS proxy server hostname or IP address. When `nil`, `proxymacs-http-host` is used for HTTPS connections (default: `nil`).
-- `proxymacs-https-port`: HTTPS proxy server port, integer or string. When `nil`, `proxymacs-http-port` is used for HTTPS connections (default: `nil`).
+- `proxymacs-http-host`: HTTP proxy server hostname or IP address. When `nil`, `proxymacs-host` is used (default: `nil`).
+
+- `proxymacs-http-port`: HTTP proxy server port, integer or string. When `nil`, `proxymacs-port` (or `8080` if unset) is used (default: `nil`).
+
+- `proxymacs-https-host`: HTTPS proxy server hostname or IP address. When `nil`, `proxymacs-http-host` or `proxymacs-host` is used for HTTPS connections (default: `nil`).
+
+- `proxymacs-https-port`: HTTPS proxy server port, integer or string. When `nil`, `proxymacs-http-port`, `proxymacs-port`, or `8080` is used for HTTPS connections (default: `nil`).
+
 - `proxymacs-http-realm`: Authentication realm used by the HTTP proxy (default: `"Proxy"`).
 - `proxymacs-http-user`: Username for proxy authentication (default: `nil`).
 - `proxymacs-http-password`: Password for proxy authentication (default: `nil`).
@@ -120,8 +138,10 @@ doom sync
 
 ### SOCKS
 
-- `proxymacs-socks-host`: SOCKS proxy server hostname or IP address (default: `nil`).
-- `proxymacs-socks-port`: SOCKS proxy server port, integer or string (default: `1080`).
+- `proxymacs-socks-host`: SOCKS proxy server hostname or IP address. When `nil`, `proxymacs-host` is used (default: `nil`).
+
+- `proxymacs-socks-port`: SOCKS proxy server port, integer or string. When `nil`, `proxymacs-port` (or `1080` if unset) is used (default: `nil`).
+
 - `proxymacs-socks-version`: SOCKS protocol version, `4` or `5` (default: `5`).
 - `proxymacs-socks-user`: Username for SOCKS proxy authentication (default: `nil`).
 - `proxymacs-socks-password`: Password for SOCKS proxy authentication (default: `nil`).
