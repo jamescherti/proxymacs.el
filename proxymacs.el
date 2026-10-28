@@ -120,6 +120,24 @@ connections."
   :type '(choice (const :tag "None" nil) string)
   :group 'proxymacs)
 
+(defcustom proxymacs-https-realm nil
+  "Authentication realm used by the HTTPS proxy.
+When nil, `proxymacs-http-realm' is used."
+  :type '(choice (const :tag "Use `proxymacs-http-realm'" nil) string)
+  :group 'proxymacs)
+
+(defcustom proxymacs-https-user nil
+  "Username for HTTPS proxy authentication.
+When nil, `proxymacs-http-user' is used."
+  :type '(choice (const :tag "Use `proxymacs-http-user'" nil) string)
+  :group 'proxymacs)
+
+(defcustom proxymacs-https-password nil
+  "Password for HTTPS proxy authentication.
+When nil, `proxymacs-http-password' is used."
+  :type '(choice (const :tag "Use `proxymacs-http-password'" nil) string)
+  :group 'proxymacs)
+
 (defcustom proxymacs-http-no-proxy nil
   "Regexp or list of regexps matching hosts that bypass the Emacs URL proxy.
 When nil, `proxymacs-no-proxy' is used.
@@ -190,16 +208,15 @@ For example:
   `(when proxymacs-verbose
      (proxymacs--message ,@args)))
 
-(defun proxymacs--get-userpass ()
-  "Return proxy credentials as USER:PASSWORD, or nil."
-  (when (and proxymacs-http-user
-             proxymacs-http-password)
-    (format "%s:%s" proxymacs-http-user proxymacs-http-password)))
+(defun proxymacs--get-userpass (user password)
+  "Return USER:PASSWORD when USER and PASSWORD are non-nil."
+  (when (and user password)
+    (format "%s:%s" user password)))
 
-(defun proxymacs--build-auth-entry (host user-pass)
-  "Build a basic auth storage entry for HOST using USER-PASS."
+(defun proxymacs--build-auth-entry (host realm user-pass)
+  "Build a basic auth storage entry for HOST, REALM, and USER-PASS."
   (list host
-        (cons (or proxymacs-http-realm "")
+        (cons (or realm "")
               (base64-encode-string user-pass t))))
 
 (defun proxymacs--enable-http ()
@@ -221,7 +238,14 @@ For example:
                          ((stringp raw-no-proxy) raw-no-proxy)
                          ((listp raw-no-proxy)
                           (mapconcat #'identity raw-no-proxy "\\|"))))
-         (user-pass (proxymacs--get-userpass))
+         (http-realm proxymacs-http-realm)
+         (https-realm (or proxymacs-https-realm proxymacs-http-realm))
+         (http-user-pass (proxymacs--get-userpass
+                          proxymacs-http-user proxymacs-http-password))
+         (https-user-pass (proxymacs--get-userpass
+                           (or proxymacs-https-user proxymacs-http-user)
+                           (or proxymacs-https-password
+                               proxymacs-http-password)))
          services
          auth-storage)
     (when http-proxy-host-port
@@ -232,14 +256,16 @@ For example:
       (push (cons "no_proxy" no-proxy) services))
     (setq url-proxy-services (nreverse services))
 
-    (when user-pass
-      (when http-proxy-host-port
-        (push (proxymacs--build-auth-entry http-proxy-host-port user-pass)
-              auth-storage))
-      (when (and https-proxy-host-port
-                 (not (equal https-proxy-host-port http-proxy-host-port)))
-        (push (proxymacs--build-auth-entry https-proxy-host-port user-pass)
-              auth-storage)))
+    (when (and http-proxy-host-port http-user-pass)
+      (push (proxymacs--build-auth-entry
+             http-proxy-host-port http-realm http-user-pass)
+            auth-storage))
+    (when (and https-proxy-host-port https-user-pass
+               (or (not (equal https-proxy-host-port http-proxy-host-port))
+                   (not http-user-pass)))
+      (push (proxymacs--build-auth-entry
+             https-proxy-host-port https-realm https-user-pass)
+            auth-storage))
     (setq url-http-proxy-basic-auth-storage (nreverse auth-storage))))
 
 (defun proxymacs--disable-http ()
