@@ -41,14 +41,27 @@
   :group 'proxymacs)
 
 (defcustom proxymacs-http-host nil
-  "HTTP proxy server address in HOST:PORT format."
+  "HTTP proxy server hostname or IP address."
   :type '(choice (const :tag "None" nil) string)
   :group 'proxymacs)
 
+(defcustom proxymacs-http-port 8080
+  "HTTP proxy server port."
+  :type '(choice integer string)
+  :group 'proxymacs)
+
 (defcustom proxymacs-https-host nil
-  "HTTPS proxy server address in HOST:PORT format.
+  "HTTPS proxy server hostname or IP address.
 When nil, `proxymacs-http-host' is used for HTTPS connections."
   :type '(choice (const :tag "Use `proxymacs-http-host'" nil) string)
+  :group 'proxymacs)
+
+(defcustom proxymacs-https-port nil
+  "HTTPS proxy server port.
+When nil, `proxymacs-http-port' is used for HTTPS connections."
+  :type '(choice (const :tag "Use `proxymacs-http-port'" nil)
+                 integer
+                 string)
   :group 'proxymacs)
 
 (defcustom proxymacs-http-realm "Proxy"
@@ -142,24 +155,32 @@ For example:
 
 (defun proxymacs--enable-http ()
   "Configure Emacs `url' HTTP and HTTPS proxy settings."
-  (let ((http-host proxymacs-http-host)
-        (https-host (or proxymacs-https-host proxymacs-http-host))
-        (user-pass (proxymacs--get-userpass))
-        services
-        auth-storage)
-    (when http-host
-      (push (cons "http" http-host) services))
-    (when https-host
-      (push (cons "https" https-host) services))
+  (let* ((http-proxy (when proxymacs-http-host
+                       (if proxymacs-http-port
+                           (format "%s:%s" proxymacs-http-host proxymacs-http-port)
+                         proxymacs-http-host)))
+         (https-host (or proxymacs-https-host proxymacs-http-host))
+         (https-port (or proxymacs-https-port proxymacs-http-port))
+         (https-proxy (when https-host
+                        (if https-port
+                            (format "%s:%s" https-host https-port)
+                          https-host)))
+         (user-pass (proxymacs--get-userpass))
+         services
+         auth-storage)
+    (when http-proxy
+      (push (cons "http" http-proxy) services))
+    (when https-proxy
+      (push (cons "https" https-proxy) services))
     (when (and services proxymacs-http-no-proxy)
       (push (cons "no_proxy" proxymacs-http-no-proxy) services))
     (setq url-proxy-services (nreverse services))
 
     (when user-pass
-      (when http-host
-        (push (proxymacs--build-auth-entry http-host user-pass) auth-storage))
-      (when (and https-host (not (equal https-host http-host)))
-        (push (proxymacs--build-auth-entry https-host user-pass) auth-storage)))
+      (when http-proxy
+        (push (proxymacs--build-auth-entry http-proxy user-pass) auth-storage))
+      (when (and https-proxy (not (equal https-proxy http-proxy)))
+        (push (proxymacs--build-auth-entry https-proxy user-pass) auth-storage)))
     (setq url-http-proxy-basic-auth-storage (nreverse auth-storage))))
 
 (defun proxymacs--disable-http ()

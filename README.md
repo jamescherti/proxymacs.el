@@ -6,15 +6,20 @@
 - Author: James Cherti <[https://www.jamescherti.com/](https://www.jamescherti.com/)>
 - License: GPL
 
-The **[proxymacs.elGitHub](https://github.com/jamescherti/proxymacs.el)** Emacs package simplifies HTTP, HTTPS, and SOCKS proxy configuration.
+The **[proxymacs](https://github.com/jamescherti/proxymacs.el)** Emacs package simplifies HTTP, HTTPS, and SOCKS proxy configuration.
 
 ## Usage
 
 ### HTTP and HTTPS Proxy
 ```elisp
-(setq proxymacs-http-host "127.0.0.1:3128")
+(setq proxymacs-http-host "127.0.0.1")
+(setq proxymacs-http-port 3128) ; accepts integer or string
 (setq proxymacs-http-realm "proxy")
 (setq proxymacs-http-no-proxy "^\\(localhost\\|127.0.0.1\\|10\\..*\\|192\\.168\\..*\\)")
+
+;; Optional HTTPS configuration (falls back to HTTP host and port when nil):
+;; (setq proxymacs-https-host "127.0.0.1")
+;; (setq proxymacs-https-port 3128)
 
 ;; Optional authentication:
 ;; (setq proxymacs-http-user "my_user")
@@ -28,7 +33,7 @@ The **[proxymacs.elGitHub](https://github.com/jamescherti/proxymacs.el)** Emacs 
 
 ```elisp
 (setq proxymacs-socks-host "127.0.0.1")
-(setq proxymacs-socks-port 1080)
+(setq proxymacs-socks-port 1080) ; accepts integer or string
 (setq proxymacs-socks-version 5) ; 5 or 4
 (setq proxymacs-socks-no-proxy "^\\(localhost\\|127.0.0.1\\|10\\..*\\|192\\.168\\..*\\)")
 
@@ -46,7 +51,8 @@ The **[proxymacs.elGitHub](https://github.com/jamescherti/proxymacs.el)** Emacs 
 
 To install *proxymacs* with `straight.el`:
 
-1. If it hasn't already been done, [add the straight.el bootstrap code](https://github.com/radian-software/straight.el?tab=readme-ov-file#getting-started) to your init file.
+1. If it has not already been done, [add the straight.el bootstrap code](https://github.com/radian-software/straight.el?tab=readme-ov-file#getting-started) to your init file.
+
 2. Add the following code to the Emacs init file:
 ```emacs-lisp
 (use-package proxymacs
@@ -97,33 +103,24 @@ doom sync
 
 ### HTTP
 
-- `proxymacs-http-host`: HTTP proxy server address in `HOST:PORT` format (default: `nil`).
-
-- `proxymacs-https-host`: HTTPS proxy server address in `HOST:PORT` format. When `nil`, `proxymacs-http-host` is used for HTTPS connections (default: `nil`).
-
+- `proxymacs-http-host`: HTTP proxy server hostname or IP address (default: `nil`).
+- `proxymacs-http-port`: HTTP proxy server port, integer or string (default: `8080`).
+- `proxymacs-https-host`: HTTPS proxy server hostname or IP address. When `nil`, `proxymacs-http-host` is used for HTTPS connections (default: `nil`).
+- `proxymacs-https-port`: HTTPS proxy server port, integer or string. When `nil`, `proxymacs-http-port` is used for HTTPS connections (default: `nil`).
 - `proxymacs-http-realm`: Authentication realm used by the HTTP proxy (default: `"Proxy"`).
-
 - `proxymacs-http-user`: Username for proxy authentication (default: `nil`).
-
 - `proxymacs-http-password`: Password for proxy authentication (default: `nil`).
-
 - `proxymacs-http-no-proxy`: Regexp matching hosts that bypass the Emacs URL proxy (default: `nil`).
 
 
 ### SOCKS
 
 - `proxymacs-socks-host`: SOCKS proxy server hostname or IP address (default: `nil`).
-
-- `proxymacs-socks-port`: SOCKS proxy server port (default: `1080`).
-
+- `proxymacs-socks-port`: SOCKS proxy server port, integer or string (default: `1080`).
 - `proxymacs-socks-version`: SOCKS protocol version, `4` or `5` (default: `5`).
-
 - `proxymacs-socks-user`: Username for SOCKS proxy authentication (default: `nil`).
-
 - `proxymacs-socks-password`: Password for SOCKS proxy authentication (default: `nil`).
-
 - `proxymacs-socks-no-proxy`: Regexp or list of regexps matching hosts that bypass the SOCKS proxy (default: `nil`).
-
 
 ### Other
 
