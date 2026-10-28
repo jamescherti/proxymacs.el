@@ -272,11 +272,10 @@ For example:
 (defun proxymacs--disable-socks ()
   "Restore Emacs `url' and `socks' proxy settings to default values."
   (setq url-gateway-method 'native)
-  (when (featurep 'socks)
-    (setq socks-server (list "Default server" nil 1080 5))
-    (setq socks-noproxy '("localhost"))
-    (setq socks-username (user-login-name))
-    (setq socks-password nil)))
+  (setq socks-server (list "Default server" nil 1080 5))
+  (setq socks-noproxy '("localhost"))
+  (setq socks-username (user-login-name))
+  (setq socks-password nil))
 
 (defun proxymacs--enable ()
   "Configure proxies based on `proxymacs-proxy-type'."
