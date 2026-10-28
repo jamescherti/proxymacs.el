@@ -48,22 +48,6 @@
   :type 'boolean
   :group 'proxymacs)
 
-(defcustom proxymacs-host nil
-  "Default proxy server hostname or IP address for HTTP, HTTPS, and SOCKS.
-Can be overridden by `proxymacs-http-host', `proxymacs-https-host',
-or `proxymacs-socks-host'."
-  :type '(choice (const :tag "None" nil) string)
-  :group 'proxymacs)
-
-(defcustom proxymacs-port nil
-  "Default proxy server port for HTTP, HTTPS, and SOCKS.
-Can be overridden by `proxymacs-http-port', `proxymacs-https-port',
-or `proxymacs-socks-port'."
-  :type '(choice (const :tag "Use protocol default" nil)
-                 integer
-                 string)
-  :group 'proxymacs)
-
 (defcustom proxymacs-no-proxy nil
   "Regexp or list of regexps matching hosts that bypass the proxy.
 Can be overridden by `proxymacs-http-no-proxy' or `proxymacs-socks-no-proxy'.
@@ -76,31 +60,25 @@ For example:
   :group 'proxymacs)
 
 (defcustom proxymacs-http-host nil
-  "HTTP proxy server hostname or IP address.
-When nil, `proxymacs-host' is used."
-  :type '(choice (const :tag "Use `proxymacs-host'" nil) string)
+  "HTTP proxy server hostname or IP address."
+  :type '(choice (const :tag "None" nil) string)
   :group 'proxymacs)
 
-(defcustom proxymacs-http-port nil
-  "HTTP proxy server port.
-When nil, `proxymacs-port' (or 8080 if unset) is used."
-  :type '(choice (const :tag "Use `proxymacs-port' or 8080" nil)
-                 integer
-                 string)
+(defcustom proxymacs-http-port 8080
+  "HTTP proxy server port."
+  :type '(choice integer string)
   :group 'proxymacs)
 
 (defcustom proxymacs-https-host nil
   "HTTPS proxy server hostname or IP address.
-When nil, `proxymacs-http-host' or `proxymacs-host' is used for HTTPS
-connections."
-  :type '(choice (const :tag "Use HTTP or global host" nil) string)
+When nil, `proxymacs-http-host' is used."
+  :type '(choice (const :tag "Use `proxymacs-http-host'" nil) string)
   :group 'proxymacs)
 
 (defcustom proxymacs-https-port nil
   "HTTPS proxy server port.
-When nil, `proxymacs-http-port', `proxymacs-port', or 8080 is used for HTTPS
-connections."
-  :type '(choice (const :tag "Use HTTP or global port" nil)
+When nil, `proxymacs-http-port' is used."
+  :type '(choice (const :tag "Use `proxymacs-http-port'" nil)
                  integer
                  string)
   :group 'proxymacs)
@@ -150,22 +128,19 @@ For example:
   :group 'proxymacs)
 
 (defcustom proxymacs-socks-host nil
-  "SOCKS proxy server hostname or IP address.
-When nil, `proxymacs-host' is used."
-  :type '(choice (const :tag "Use `proxymacs-host'" nil) string)
+  "SOCKS proxy server hostname or IP address."
+  :type '(choice (const :tag "None" nil) string)
   :group 'proxymacs)
 
-(defcustom proxymacs-socks-port nil
-  "SOCKS proxy server port.
-When nil, `proxymacs-port' (or 1080 if unset) is used."
-  :type '(choice (const :tag "Use `proxymacs-port' or 1080" nil)
-                 integer
-                 string)
+(defcustom proxymacs-socks-port 1080
+  "SOCKS proxy server port."
+  :type '(choice integer string)
   :group 'proxymacs)
 
 (defcustom proxymacs-socks-version 5
-  "SOCKS protocol version (4 or 5)."
+  "SOCKS protocol version (4, 4a, or 5)."
   :type '(choice (const :tag "SOCKS5" 5)
+                 (const :tag "SOCKS4a" 4a)
                  (const :tag "SOCKS4" 4))
   :group 'proxymacs)
 
@@ -221,8 +196,8 @@ For example:
 
 (defun proxymacs--enable-http ()
   "Configure Emacs `url' HTTP and HTTPS proxy settings."
-  (let* ((http-host (or proxymacs-http-host proxymacs-host))
-         (http-port (or proxymacs-http-port proxymacs-port 8080))
+  (let* ((http-host proxymacs-http-host)
+         (http-port proxymacs-http-port)
          (http-proxy-host-port (when http-host
                                  (if http-port
                                      (format "%s:%s" http-host http-port)
@@ -275,8 +250,8 @@ For example:
 
 (defun proxymacs--enable-socks ()
   "Configure Emacs `url' and `socks' proxy settings."
-  (let ((host (or proxymacs-socks-host proxymacs-host))
-        (raw-port (or proxymacs-socks-port proxymacs-port 1080))
+  (let ((host proxymacs-socks-host)
+        (raw-port proxymacs-socks-port)
         (no-proxy (or proxymacs-socks-no-proxy proxymacs-no-proxy)))
     (when (and host raw-port)
       (require 'socks)
