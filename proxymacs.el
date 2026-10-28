@@ -6,7 +6,7 @@
 ;; Version: 0.9.9
 ;; URL: https://github.com/jamescherti/proxymacs.el
 ;; Keywords: convenience
-;; Package-Requires: ((emacs "24.1"))
+;; Package-Requires: ((emacs "25.1"))
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;; This file is free software; you can redistribute it and/or modify
@@ -27,6 +27,9 @@
 
 ;;; Code:
 
+(defvar url-proxy-services)
+(defvar url-http-proxy-basic-auth-storage)
+
 (defgroup proxymacs nil
   "Simplify proxy configuration."
   :group 'proxymacs
@@ -40,6 +43,43 @@
   :type 'boolean
   :group 'proxymacs)
 
+(defcustom proxymacs-http-host nil
+  "HTTP proxy server address in HOST:PORT format."
+  :type '(choice (const :tag "None" nil) string)
+  :group 'proxymacs)
+
+(defcustom proxymacs-https-host nil
+  "HTTPS proxy server address in HOST:PORT format.
+When nil, `proxymacs-http-host' is used for HTTPS connections."
+  :type '(choice (const :tag "Use `proxymacs-http-host'" nil) string)
+  :group 'proxymacs)
+
+(defcustom proxymacs-http-realm "Proxy"
+  "Authentication realm used by the HTTP proxy."
+  :type '(choice (const :tag "None" nil) string)
+  :group 'proxymacs)
+
+(defcustom proxymacs-http-user nil
+  "Username for proxy authentication, or nil."
+  :type '(choice (const :tag "None" nil) string)
+  :group 'proxymacs)
+
+(defcustom proxymacs-http-password nil
+  "Password for proxy authentication, or nil."
+  :type '(choice (const :tag "None" nil) string)
+  :group 'proxymacs)
+
+(defcustom proxymacs-http-no-proxy nil
+"Regexp matching hosts that bypass the Emacs URL proxy.
+
+For example:
+\"^\\\\(localhost\\\\|127\\\\.0\\\\.0\\\\.1\\\\|192\\\\.168\\\\..*\\\\)\""
+  :type '(choice (const :tag "None" nil) regexp)
+  :group 'proxymacs)
+
+(defvar proxymacs--saved-url-state nil
+  "Alist storing previous values of `url' proxy variables before activation.")
+
 (defun proxymacs--message (&rest args)
   "Display a message with the same ARGS arguments as `message'."
   (apply #'message (concat "[proxymacs] " (car args)) (cdr args)))
@@ -47,28 +87,8 @@
 (defmacro proxymacs--verbose-message (&rest args)
   "Display a verbose message with the same ARGS arguments as `message'."
   (declare (indent 0) (debug t))
-  `(progn
-     (when proxymacs-verbose
-       (proxymacs--message
-        (concat ,(car args)) ,@(cdr args)))))
-
-(defvar proxymacs-http-host nil
-  "Proxy server address in HOST:PORT format.")
-
-(defvar proxymacs-http-realm nil
-  "Authentication realm used by the HTTP proxy.")
-
-(defvar proxymacs-http-user nil
-  "Username for proxy authentication, or nil.")
-
-(defvar proxymacs-http-password nil
-  "Password for proxy authentication, or nil.")
-
-(defvar proxymacs-http-noproxy nil
-  "Regexp matching hosts that bypass the Emacs URL proxy.")
-
-(defvar proxymacs-http-noproxy-env nil
-  "Comma-separated hosts that bypass the proxy in subprocesses.")
+  `(when proxymacs-verbose
+     (proxymacs--message ,@args)))
 
 (defun proxymacs--get-userpass ()
   "Return proxy credentials as USER:PASSWORD, or nil."
@@ -76,23 +96,60 @@
              proxymacs-http-password)
     (format "%s:%s" proxymacs-http-user proxymacs-http-password)))
 
+(defun proxymacs--build-auth-entry (host user-pass)
+  "Build a basic auth storage entry for HOST using USER-PASS."
+  (list host
+        (cons (or proxymacs-http-realm "")
+              (base64-encode-string user-pass t))))
+
+(defun proxymacs--enable-http ()
+  "Configure Emacs `url' HTTP and HTTPS proxy settings."
+  (unless proxymacs--saved-url-state
+    (setq proxymacs--saved-url-state
+          (list (cons 'url-proxy-services
+                      (when (boundp 'url-proxy-services)
+                        url-proxy-services))
+                (cons 'url-http-proxy-basic-auth-storage
+                      (when (boundp 'url-http-proxy-basic-auth-storage)
+                        url-http-proxy-basic-auth-storage)))))
+  (let ((http-host proxymacs-http-host)
+        (https-host (or proxymacs-https-host proxymacs-http-host))
+        (user-pass (proxymacs--get-userpass))
+        services
+        auth-storage)
+    (when http-host
+      (push (cons "http" http-host) services))
+    (when https-host
+      (push (cons "https" https-host) services))
+    (when (and services proxymacs-http-no-proxy)
+      (push (cons "no_proxy" proxymacs-http-no-proxy) services))
+    (setq url-proxy-services (nreverse services))
+
+    (when user-pass
+      (when http-host
+        (push (proxymacs--build-auth-entry http-host user-pass) auth-storage))
+      (when (and https-host (not (equal https-host http-host)))
+        (push (proxymacs--build-auth-entry https-host user-pass) auth-storage)))
+    (setq url-http-proxy-basic-auth-storage (nreverse auth-storage))))
+
+(defun proxymacs--disable-http ()
+  "Restore Emacs `url' HTTP and HTTPS proxy settings."
+  (when proxymacs--saved-url-state
+    (setq url-proxy-services
+          (alist-get 'url-proxy-services proxymacs--saved-url-state))
+    (setq url-http-proxy-basic-auth-storage
+          (alist-get 'url-http-proxy-basic-auth-storage proxymacs--saved-url-state))
+    (setq proxymacs--saved-url-state nil)))
+
 (defun proxymacs--enable ()
   "Configure HTTP proxies and subprocess proxy integration."
-  (interactive)
-  (let ((user-pass (proxymacs--get-userpass)))
-    (with-no-warnings
-      (setq url-proxy-services
-            (append
-             (list (cons "http" proxymacs-http-host)
-                   (cons "https" proxymacs-http-host))
-             (when proxymacs-http-noproxy
-               (list (cons "no_proxy" proxymacs-http-noproxy)))))
+  (proxymacs--enable-http)
+  (proxymacs--verbose-message "Proxy configuration enabled."))
 
-      (setq url-http-proxy-basic-auth-storage
-            (when user-pass
-              (list (list proxymacs-http-host
-                          (cons proxymacs-http-realm
-                                (base64-encode-string user-pass t)))))))))
+(defun proxymacs--disable ()
+  "Disable HTTP proxies and subprocess proxy integration."
+  (proxymacs--disable-http)
+  (proxymacs--verbose-message "Proxy configuration disabled."))
 
 ;;;###autoload
 (define-minor-mode proxymacs-mode
@@ -103,9 +160,7 @@
   (if proxymacs-mode
       (proxymacs--enable)
     ;; HTTP
-    (with-no-warnings
-      (setq url-proxy-services nil)
-      (setq url-http-proxy-basic-auth-storage nil))))
+    (proxymacs--disable)))
 
 (provide 'proxymacs)
 ;;; proxymacs.el ends here

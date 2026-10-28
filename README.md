@@ -6,14 +6,14 @@
 - Author: James Cherti <[https://www.jamescherti.com/](https://www.jamescherti.com/)>
 - License: GPL
 
-An Emacs package that simplifies HTTP and HTTPS proxy configuration with optional authentication..
+An Emacs package that simplifies HTTP and HTTPS proxy configuration with optional authentication and automatic subprocess integration.
 
 ## Usage
 
 ```elisp
 (setq proxymacs-http-host "127.0.0.1:3128")
 (setq proxymacs-http-realm "proxy")
-(setq proxymacs-http-noproxy "^\\(localhost\\|127.0.0.1\\|10\\..*\\|192\\.168\\..*\\)")
+(setq proxymacs-http-no-proxy "^\\(localhost\\|127.0.0.1\\|10\\..*\\|192\\.168\\..*\\)")
 
 ;; Optional authentication:
 ;; (setq proxymacs-http-user "my_user")
@@ -43,7 +43,7 @@ To install *proxymacs* with `straight.el`:
 
 To install *proxymacs* with `use-package` and `:vc` (Emacs >= 30):
 
-``` emacs-lisp
+```emacs-lisp
 (use-package proxymacs
   :vc (:url "https://github.com/jamescherti/proxymacs.el"
        :rev :newest))
@@ -54,6 +54,7 @@ To install *proxymacs* with `use-package` and `:vc` (Emacs >= 30):
 Here is how to install *proxymacs* on Doom Emacs:
 
 1. Add to the `~/.doom.d/packages.el` file:
+
 ```elisp
 (package! proxymacs
   :recipe
@@ -61,6 +62,7 @@ Here is how to install *proxymacs* on Doom Emacs:
 ```
 
 2. Add to `~/.doom.d/config.el`:
+
 ```elisp
 (after! proxymacs
   ;; TODO: setq options
@@ -69,9 +71,21 @@ Here is how to install *proxymacs* on Doom Emacs:
 ```
 
 3. Run the `doom sync` command:
+
 ```
 doom sync
 ```
+
+## Customization
+
+* `proxymacs-http-host`: HTTP proxy server address in `HOST:PORT` format (default: `nil`).
+* `proxymacs-https-host`: HTTPS proxy server address in `HOST:PORT` format. When `nil`, `proxymacs-http-host` is used for HTTPS connections (default: `nil`).
+* `proxymacs-http-realm`: Authentication realm used by the HTTP proxy (default: `"Proxy"`).
+* `proxymacs-http-user`: Username for proxy authentication (default: `nil`).
+* `proxymacs-http-password`: Password for proxy authentication (default: `nil`).
+* `proxymacs-http-no-proxy`: Regexp matching hosts that bypass the Emacs URL proxy (default: `nil`).
+* `proxymacs-http-no-proxy-env`: Comma-separated hosts that bypass the proxy in subprocesses (default: `nil`).
+* `proxymacs-verbose`: Enable displaying verbose messages (default: `nil`).
 
 ## Author and License
 
