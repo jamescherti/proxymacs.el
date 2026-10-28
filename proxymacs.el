@@ -109,7 +109,7 @@ When nil, the value of `proxymacs-http-host' is used instead.")
     ;; HTTP
     (with-no-warnings
       (setq url-proxy-services nil)
-      (setq url-http-proxy-basic-auth-storage))))
+      (setq url-http-proxy-basic-auth-storage nil))))
 
 (provide 'proxymacs)
 ;;; proxymacs.el ends here

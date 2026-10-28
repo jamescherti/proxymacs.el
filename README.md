@@ -58,6 +58,21 @@ Here is how to install *proxymacs* on Doom Emacs:
 doom sync
 ```
 
+## Usage
+
+```elisp
+(setq proxymacs-http-host "127.0.0.1:3128")
+(setq proxymacs-http-realm "proxy")
+(setq proxymacs-http-noproxy "^\\(localhost\\|127.0.0.1\\|10\\..*\\|192\\.168\\..*\\)")
+
+;; Optional authentication:
+;; (setq proxymacs-http-user "my_user")
+;; (setq proxymacs-http-password "my_password")
+
+;; Enable the mode:
+(proxymacs-mode)
+```
+
 ## Author and License
 
 The *proxymacs* Emacs package has been written by [James Cherti](https://www.jamescherti.com/) and is distributed under terms of the GNU General Public License version 3, or, at your choice, any later version.
