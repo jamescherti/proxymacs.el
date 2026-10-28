@@ -63,6 +63,17 @@ or `proxymacs-socks-port'."
                  string)
   :group 'proxymacs)
 
+(defcustom proxymacs-no-proxy nil
+  "Regexp or list of regexps matching hosts that bypass the proxy.
+Can be overridden by `proxymacs-http-no-proxy' or `proxymacs-socks-no-proxy'.
+
+For example:
+\"^\\\\(localhost\\\\|127\\\\.0\\\\.0\\\\.1\\\\|192\\\\.168\\\\..*\\\\)\""
+  :type '(choice (const :tag "None" nil)
+                 regexp
+                 (repeat regexp))
+  :group 'proxymacs)
+
 (defcustom proxymacs-http-host nil
   "HTTP proxy server hostname or IP address.
 When nil, `proxymacs-host' is used."
@@ -109,11 +120,14 @@ connections."
   :group 'proxymacs)
 
 (defcustom proxymacs-http-no-proxy nil
-  "Regexp matching hosts that bypass the Emacs URL proxy.
+  "Regexp or list of regexps matching hosts that bypass the Emacs URL proxy.
+When nil, `proxymacs-no-proxy' is used.
 
 For example:
 \"^\\\\(localhost\\\\|127\\\\.0\\\\.0\\\\.1\\\\|192\\\\.168\\\\..*\\\\)\""
-  :type '(choice (const :tag "None" nil) regexp)
+  :type '(choice (const :tag "Use `proxymacs-no-proxy'" nil)
+                 regexp
+                 (repeat regexp))
   :group 'proxymacs)
 
 (defcustom proxymacs-socks-host nil
@@ -148,10 +162,11 @@ When nil, `proxymacs-port' (or 1080 if unset) is used."
 
 (defcustom proxymacs-socks-no-proxy nil
   "Regexp or list of regexps matching hosts that bypass the SOCKS proxy.
+When nil, `proxymacs-no-proxy' is used.
 
 For example:
 \"^\\\\(localhost\\\\|127\\\\.0\\\\.0\\\\.1\\\\|192\\\\.168\\\\..*\\\\)\""
-  :type '(choice (const :tag "None" nil)
+  :type '(choice (const :tag "Use `proxymacs-no-proxy'" nil)
                  regexp
                  (repeat regexp))
   :group 'proxymacs)
@@ -200,6 +215,11 @@ For example:
                         (if https-port
                             (format "%s:%s" https-host https-port)
                           https-host)))
+         (raw-no-proxy (or proxymacs-http-no-proxy proxymacs-no-proxy))
+         (no-proxy (cond ((null raw-no-proxy) nil)
+                         ((stringp raw-no-proxy) raw-no-proxy)
+                         ((listp raw-no-proxy)
+                          (mapconcat #'identity raw-no-proxy "\\|"))))
          (user-pass (proxymacs--get-userpass))
          services
          auth-storage)
@@ -207,8 +227,8 @@ For example:
       (push (cons "http" http-proxy) services))
     (when https-proxy
       (push (cons "https" https-proxy) services))
-    (when (and services proxymacs-http-no-proxy)
-      (push (cons "no_proxy" proxymacs-http-no-proxy) services))
+    (when (and services no-proxy)
+      (push (cons "no_proxy" no-proxy) services))
     (setq url-proxy-services (nreverse services))
 
     (when user-pass
@@ -226,7 +246,8 @@ For example:
 (defun proxymacs--enable-socks ()
   "Configure Emacs `url' and `socks' proxy settings."
   (let ((host (or proxymacs-socks-host proxymacs-host))
-        (raw-port (or proxymacs-socks-port proxymacs-port 1080)))
+        (raw-port (or proxymacs-socks-port proxymacs-port 1080))
+        (no-proxy (or proxymacs-socks-no-proxy proxymacs-no-proxy)))
     (when (and host raw-port)
       (require 'socks)
       (let ((version (or proxymacs-socks-version 5))
@@ -238,11 +259,11 @@ For example:
                                  port
                                  version))
         (setq socks-noproxy
-              (cond ((null proxymacs-socks-no-proxy) nil)
-                    ((stringp proxymacs-socks-no-proxy)
-                     (list proxymacs-socks-no-proxy))
-                    ((listp proxymacs-socks-no-proxy)
-                     proxymacs-socks-no-proxy)))
+              (cond ((null no-proxy) nil)
+                    ((stringp no-proxy)
+                     (list no-proxy))
+                    ((listp no-proxy)
+                     no-proxy)))
         (setq socks-username (or proxymacs-socks-user (user-login-name)))
         (setq socks-password proxymacs-socks-password)
         (setq url-gateway-method 'socks)))))

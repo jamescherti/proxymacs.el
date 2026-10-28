@@ -15,11 +15,12 @@ The **[proxymacs](https://github.com/jamescherti/proxymacs.el)** Emacs package s
 (setq proxymacs-proxy-type 'http) ; 'http is the default
 (setq proxymacs-host "127.0.0.1")
 (setq proxymacs-port 3128) ; accepts integer or string
-(setq proxymacs-http-no-proxy "^\\(localhost\\|127.0.0.1\\|10\\..*\\|192\\.168\\..*\\)")
+(setq proxymacs-no-proxy "^\\(localhost\\|127.0.0.1\\|10\\..*\\|192\\.168\\..*\\)")
 
-;; Optional HTTP-specific host/port (overrides `proxymacs-host` and `proxymacs-port`):
+;; Optional HTTP-specific overrides (overrides `proxymacs-host`, `proxymacs-port`, and `proxymacs-no-proxy`):
 ;; (setq proxymacs-http-host "127.0.0.1")
 ;; (setq proxymacs-http-port 3128)
+;; (setq proxymacs-http-no-proxy "^\\(localhost\\|127.0.0.1\\|10\\..*\\|192\\.168\\..*\\)")
 
 ;; Optional HTTPS configuration (falls back to HTTP or global host and port when nil):
 ;; (setq proxymacs-https-host "127.0.0.1")
@@ -41,11 +42,12 @@ The **[proxymacs](https://github.com/jamescherti/proxymacs.el)** Emacs package s
 (setq proxymacs-host "127.0.0.1")
 (setq proxymacs-port 1080) ; accepts integer or string
 (setq proxymacs-socks-version 5) ; 5 or 4
-(setq proxymacs-socks-no-proxy "^\\(localhost\\|127.0.0.1\\|10\\..*\\|192\\.168\\..*\\)")
+(setq proxymacs-no-proxy "^\\(localhost\\|127.0.0.1\\|10\\..*\\|192\\.168\\..*\\)")
 
-;; Optional SOCKS-specific host/port (overrides `proxymacs-host` and `proxymacs-port`):
+;; Optional SOCKS-specific overrides (overrides `proxymacs-host`, `proxymacs-port`, and `proxymacs-no-proxy`):
 ;; (setq proxymacs-socks-host "127.0.0.1")
 ;; (setq proxymacs-socks-port 1080)
+;; (setq proxymacs-socks-no-proxy "^\\(localhost\\|127.0.0.1\\|10\\..*\\|192\\.168\\..*\\)")
 
 ;; Optional authentication:
 ;; (setq proxymacs-socks-user "my_user")
@@ -119,7 +121,8 @@ doom sync
 
 - `proxymacs-port`: Default proxy server port for HTTP, HTTPS, and SOCKS, integer or string. Can be overridden by `proxymacs-http-port`, `proxymacs-https-port`, or `proxymacs-socks-port` (default: `nil`).
 
-- `proxymacs-proxy-type`: The active proxy type. Accepts `'http` (for HTTP and HTTPS) or `'socks` (for SOCKS). (default: `'http`).
+- `proxymacs-no-proxy`: Regexp or list of regexps matching hosts that bypass the proxy. Can be overridden by `proxymacs-http-no-proxy` or `proxymacs-socks-no-proxy` (default: `nil`).
+
 
 ### HTTP
 
@@ -134,7 +137,9 @@ doom sync
 - `proxymacs-http-realm`: Authentication realm used by the HTTP proxy (default: `"Proxy"`).
 - `proxymacs-http-user`: Username for proxy authentication (default: `nil`).
 - `proxymacs-http-password`: Password for proxy authentication (default: `nil`).
-- `proxymacs-http-no-proxy`: Regexp matching hosts that bypass the Emacs URL proxy (default: `nil`).
+
+- `proxymacs-http-no-proxy`: Regexp or list of regexps matching hosts that bypass the Emacs URL proxy. When `nil`, `proxymacs-no-proxy` is used (default: `nil`).
+
 
 ### SOCKS
 
@@ -145,7 +150,9 @@ doom sync
 - `proxymacs-socks-version`: SOCKS protocol version, `4` or `5` (default: `5`).
 - `proxymacs-socks-user`: Username for SOCKS proxy authentication (default: `nil`).
 - `proxymacs-socks-password`: Password for SOCKS proxy authentication (default: `nil`).
-- `proxymacs-socks-no-proxy`: Regexp or list of regexps matching hosts that bypass the SOCKS proxy (default: `nil`).
+
+- `proxymacs-socks-no-proxy`: Regexp or list of regexps matching hosts that bypass the SOCKS proxy. When `nil`, `proxymacs-no-proxy` is used (default: `nil`).
+
 
 ### Other
 
