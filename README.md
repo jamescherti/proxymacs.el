@@ -8,6 +8,21 @@
 
 An Emacs package that simplifies HTTP and HTTPS proxy configuration with optional authentication..
 
+## Usage
+
+```elisp
+(setq proxymacs-http-host "127.0.0.1:3128")
+(setq proxymacs-http-realm "proxy")
+(setq proxymacs-http-noproxy "^\\(localhost\\|127.0.0.1\\|10\\..*\\|192\\.168\\..*\\)")
+
+;; Optional authentication:
+;; (setq proxymacs-http-user "my_user")
+;; (setq proxymacs-http-password "my_password")
+
+;; Enable the mode:
+(proxymacs-mode)
+```
+
 ## Installation
 
 ### Emacs: use-package and straight (Emacs version < 30)
@@ -56,21 +71,6 @@ Here is how to install *proxymacs* on Doom Emacs:
 3. Run the `doom sync` command:
 ```
 doom sync
-```
-
-## Usage
-
-```elisp
-(setq proxymacs-http-host "127.0.0.1:3128")
-(setq proxymacs-http-realm "proxy")
-(setq proxymacs-http-noproxy "^\\(localhost\\|127.0.0.1\\|10\\..*\\|192\\.168\\..*\\)")
-
-;; Optional authentication:
-;; (setq proxymacs-http-user "my_user")
-;; (setq proxymacs-http-password "my_password")
-
-;; Enable the mode:
-(proxymacs-mode)
 ```
 
 ## Author and License

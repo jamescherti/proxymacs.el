@@ -55,10 +55,6 @@
 (defvar proxymacs-http-host nil
   "Proxy server address in HOST:PORT format.")
 
-(defvar proxymacs-https-host nil
-  "Proxy server address in HOST:PORT format.
-When nil, the value of `proxymacs-http-host' is used instead.")
-
 (defvar proxymacs-http-realm nil
   "Authentication realm used by the HTTP proxy.")
 
