@@ -115,7 +115,7 @@ doom sync
 
 ### General
 
-- `proxymacs-proxy-type`: The active proxy type. Accepts `'http` (for HTTP and HTTPS) or `'socks` (for SOCKS) (default: `'http`).
+- `proxymacs-proxy-type`: The active proxy type. Accepts `'http` (for HTTP and HTTPS) or `'socks` (for SOCKS) (default: `nil`).
 
 - `proxymacs-host`: Default proxy server hostname or IP address for HTTP, HTTPS, and SOCKS. Can be overridden by `proxymacs-http-host`, `proxymacs-https-host`, or `proxymacs-socks-host` (default: `nil`).
 
