@@ -12,6 +12,7 @@ The **[proxymacs](https://github.com/jamescherti/proxymacs.el)** Emacs package s
 
 ### HTTP and HTTPS Proxy
 ```elisp
+(setq proxymacs-proxy-type 'http) ; 'http is the default
 (setq proxymacs-http-host "127.0.0.1")
 (setq proxymacs-http-port 3128) ; accepts integer or string
 (setq proxymacs-http-realm "proxy")
@@ -32,6 +33,7 @@ The **[proxymacs](https://github.com/jamescherti/proxymacs.el)** Emacs package s
 ### SOCKS Proxy
 
 ```elisp
+(setq proxymacs-proxy-type 'socks)
 (setq proxymacs-socks-host "127.0.0.1")
 (setq proxymacs-socks-port 1080) ; accepts integer or string
 (setq proxymacs-socks-version 5) ; 5 or 4
@@ -103,6 +105,10 @@ doom sync
 
 ### HTTP
 
+- `proxymacs-proxy-type`: The active proxy type. Accepts `'http` (for HTTP and HTTPS) or `'socks` (for SOCKS). (default: `'http`).
+
+### HTTP
+
 - `proxymacs-http-host`: HTTP proxy server hostname or IP address (default: `nil`).
 - `proxymacs-http-port`: HTTP proxy server port, integer or string (default: `8080`).
 - `proxymacs-https-host`: HTTPS proxy server hostname or IP address. When `nil`, `proxymacs-http-host` is used for HTTPS connections (default: `nil`).
@@ -111,7 +117,6 @@ doom sync
 - `proxymacs-http-user`: Username for proxy authentication (default: `nil`).
 - `proxymacs-http-password`: Password for proxy authentication (default: `nil`).
 - `proxymacs-http-no-proxy`: Regexp matching hosts that bypass the Emacs URL proxy (default: `nil`).
-
 
 ### SOCKS
 

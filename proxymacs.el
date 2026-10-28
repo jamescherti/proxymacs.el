@@ -35,6 +35,12 @@
           :tag "Github"
           "https://github.com/jamescherti/proxymacs.el"))
 
+(defcustom proxymacs-proxy-type 'http
+  "The active proxy type."
+  :type '(choice (const :tag "HTTP and HTTPS proxy" http)
+                 (const :tag "SOCKS proxy" socks))
+  :group 'proxymacs)
+
 (defcustom proxymacs-verbose nil
   "Enable displaying verbose messages."
   :type 'boolean
@@ -220,9 +226,14 @@ For example:
     (setq socks-password nil)))
 
 (defun proxymacs--enable ()
-  "Configure HTTP, HTTPS, and SOCKS proxies."
-  (proxymacs--enable-http)
-  (proxymacs--enable-socks)
+  "Configure proxies based on `proxymacs-proxy-type'."
+  (pcase proxymacs-proxy-type
+    ('http
+     (proxymacs--enable-http))
+    ('socks
+     (proxymacs--enable-socks))
+    (_
+     (user-error "[proxymacs] Unknown proxy type: %s" proxymacs-proxy-type)))
   (proxymacs--verbose-message "Proxy configuration enabled."))
 
 (defun proxymacs--disable ()
