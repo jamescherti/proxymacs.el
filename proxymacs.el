@@ -28,7 +28,7 @@
 ;;; Code:
 
 (defgroup proxymacs nil
-  "An Emacs Lisp package that simplifies HTTP and HTTPS proxy configuration with optional authentication and automatic subprocess integration."
+  "Simplify proxy configuration."
   :group 'proxymacs
   :prefix "proxymacs-"
   :link '(url-link
@@ -52,14 +52,56 @@
        (proxymacs--message
         (concat ,(car args)) ,@(cdr args)))))
 
+(defvar proxymacs-http-host nil
+  "Proxy server address in HOST:PORT format.")
+
+(defvar proxymacs-http-realm nil
+  "Authentication realm used by the HTTP proxy.")
+
+(defvar proxymacs-http-user nil
+  "Username for proxy authentication, or nil.")
+
+(defvar proxymacs-http-password nil
+  "Password for proxy authentication, or nil.")
+
+(defvar proxymacs-http-noproxy nil
+  "Regexp matching hosts that bypass the Emacs URL proxy.")
+
+(defvar proxymacs-http-noproxy-env nil
+  "Comma-separated hosts that bypass the proxy in subprocesses.")
+
+(defun proxymacs--get-userpass ()
+  "Return proxy credentials as USER:PASSWORD, or nil."
+  (when (and proxymacs-http-user
+             proxymacs-http-password)
+    (format "%s:%s" proxymacs-http-user proxymacs-http-password)))
+
+(defun proxymacs--enable ()
+  "Configure HTTP proxies and subprocess proxy integration."
+  (interactive)
+  (let ((user-pass (proxymacs--get-userpass)))
+    (with-no-warnings
+      (setq url-proxy-services
+            (append
+             (list (cons "http" proxymacs-http-host)
+                   (cons "https" proxymacs-http-host))
+             (when proxymacs-http-noproxy
+               (list (cons "no_proxy" proxymacs-http-noproxy)))))
+
+      (setq url-http-proxy-basic-auth-storage
+            (when user-pass
+              (list (list proxymacs-http-host
+                          (cons proxymacs-http-realm
+                                (base64-encode-string user-pass t)))))))))
+
 ;;;###autoload
 (define-minor-mode proxymacs-mode
   "Toggle `proxymacs-mode'."
   :global t
-  :lighter " proxymacs"
+  :lighter " ProxyM"
   :group 'proxymacs
   (if proxymacs-mode
-      t
+      (proxymacs--enable)
     t))
 
 (provide 'proxymacs)
