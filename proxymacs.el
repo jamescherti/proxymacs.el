@@ -110,12 +110,6 @@ For example:
                  (repeat regexp))
   :group 'proxymacs)
 
-(defvar proxymacs--saved-url-state nil
-  "Alist storing previous values of `url' proxy variables before activation.")
-
-(defvar proxymacs--saved-socks-state nil
-  "Alist storing previous values of SOCKS proxy variables before activation.")
-
 (defvar url-proxy-services)
 (defvar url-http-proxy-basic-auth-storage)
 (defvar url-gateway-method)
@@ -148,14 +142,6 @@ For example:
 
 (defun proxymacs--enable-http ()
   "Configure Emacs `url' HTTP and HTTPS proxy settings."
-  (unless proxymacs--saved-url-state
-    (setq proxymacs--saved-url-state
-          (list (cons 'url-proxy-services
-                      (when (boundp 'url-proxy-services)
-                        url-proxy-services))
-                (cons 'url-http-proxy-basic-auth-storage
-                      (when (boundp 'url-http-proxy-basic-auth-storage)
-                        url-http-proxy-basic-auth-storage)))))
   (let ((http-host proxymacs-http-host)
         (https-host (or proxymacs-https-host proxymacs-http-host))
         (user-pass (proxymacs--get-userpass))
@@ -177,35 +163,14 @@ For example:
     (setq url-http-proxy-basic-auth-storage (nreverse auth-storage))))
 
 (defun proxymacs--disable-http ()
-  "Restore Emacs `url' HTTP and HTTPS proxy settings."
-  (when proxymacs--saved-url-state
-    (setq url-proxy-services
-          (alist-get 'url-proxy-services proxymacs--saved-url-state))
-    (setq url-http-proxy-basic-auth-storage
-          (alist-get 'url-http-proxy-basic-auth-storage proxymacs--saved-url-state))
-    (setq proxymacs--saved-url-state nil)))
+  "Restore Emacs `url' HTTP and HTTPS proxy settings to default values."
+  (setq url-proxy-services nil)
+  (setq url-http-proxy-basic-auth-storage nil))
 
 (defun proxymacs--enable-socks ()
   "Configure Emacs `url' and `socks' proxy settings."
   (when (and proxymacs-socks-host proxymacs-socks-port)
     (require 'socks)
-    (unless proxymacs--saved-socks-state
-      (setq proxymacs--saved-socks-state
-            (list (cons 'url-gateway-method
-                        (when (boundp 'url-gateway-method)
-                          url-gateway-method))
-                  (cons 'socks-server
-                        (when (boundp 'socks-server)
-                          socks-server))
-                  (cons 'socks-noproxy
-                        (when (boundp 'socks-noproxy)
-                          socks-noproxy))
-                  (cons 'socks-username
-                        (when (boundp 'socks-username)
-                          socks-username))
-                  (cons 'socks-password
-                        (when (boundp 'socks-password)
-                          socks-password)))))
     (let ((version (or proxymacs-socks-version 5)))
       (setq socks-server (list "Default server"
                                proxymacs-socks-host
@@ -217,26 +182,18 @@ For example:
                    (list proxymacs-socks-no-proxy))
                   ((listp proxymacs-socks-no-proxy)
                    proxymacs-socks-no-proxy)))
-      (setq socks-username
-            (or proxymacs-socks-user
-                (alist-get 'socks-username proxymacs--saved-socks-state)))
+      (setq socks-username (or proxymacs-socks-user (user-login-name)))
       (setq socks-password proxymacs-socks-password)
       (setq url-gateway-method 'socks))))
 
 (defun proxymacs--disable-socks ()
-  "Restore Emacs `url' and `socks' proxy settings."
-  (when proxymacs--saved-socks-state
-    (setq url-gateway-method
-          (alist-get 'url-gateway-method proxymacs--saved-socks-state))
-    (setq socks-server
-          (alist-get 'socks-server proxymacs--saved-socks-state))
-    (setq socks-noproxy
-          (alist-get 'socks-noproxy proxymacs--saved-socks-state))
-    (setq socks-username
-          (alist-get 'socks-username proxymacs--saved-socks-state))
-    (setq socks-password
-          (alist-get 'socks-password proxymacs--saved-socks-state))
-    (setq proxymacs--saved-socks-state nil)))
+  "Restore Emacs `url' and `socks' proxy settings to default values."
+  (setq url-gateway-method 'native)
+  (when (featurep 'socks)
+    (setq socks-server (list "Default server" nil 1080 5))
+    (setq socks-noproxy '("localhost"))
+    (setq socks-username (user-login-name))
+    (setq socks-password nil)))
 
 (defun proxymacs--enable ()
   "Configure HTTP, HTTPS, and SOCKS proxies."
