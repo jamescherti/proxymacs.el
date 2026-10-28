@@ -206,16 +206,16 @@ For example:
   "Configure Emacs `url' HTTP and HTTPS proxy settings."
   (let* ((http-host (or proxymacs-http-host proxymacs-host))
          (http-port (or proxymacs-http-port proxymacs-port 8080))
-         (http-proxy (when http-host
-                       (if http-port
-                           (format "%s:%s" http-host http-port)
-                         http-host)))
+         (http-proxy-host-port (when http-host
+                                 (if http-port
+                                     (format "%s:%s" http-host http-port)
+                                   http-host)))
          (https-host (or proxymacs-https-host http-host))
          (https-port (or proxymacs-https-port http-port))
-         (https-proxy (when https-host
-                        (if https-port
-                            (format "%s:%s" https-host https-port)
-                          https-host)))
+         (https-proxy-host-port (when https-host
+                                  (if https-port
+                                      (format "%s:%s" https-host https-port)
+                                    https-host)))
          (raw-no-proxy (or proxymacs-http-no-proxy proxymacs-no-proxy))
          (no-proxy (cond ((null raw-no-proxy) nil)
                          ((stringp raw-no-proxy) raw-no-proxy)
@@ -224,19 +224,22 @@ For example:
          (user-pass (proxymacs--get-userpass))
          services
          auth-storage)
-    (when http-proxy
-      (push (cons "http" http-proxy) services))
-    (when https-proxy
-      (push (cons "https" https-proxy) services))
+    (when http-proxy-host-port
+      (push (cons "http" http-proxy-host-port) services))
+    (when https-proxy-host-port
+      (push (cons "https" https-proxy-host-port) services))
     (when (and services no-proxy)
       (push (cons "no_proxy" no-proxy) services))
     (setq url-proxy-services (nreverse services))
 
     (when user-pass
-      (when http-proxy
-        (push (proxymacs--build-auth-entry http-proxy user-pass) auth-storage))
-      (when (and https-proxy (not (equal https-proxy http-proxy)))
-        (push (proxymacs--build-auth-entry https-proxy user-pass) auth-storage)))
+      (when http-proxy-host-port
+        (push (proxymacs--build-auth-entry http-proxy-host-port user-pass)
+              auth-storage))
+      (when (and https-proxy-host-port
+                 (not (equal https-proxy-host-port http-proxy-host-port)))
+        (push (proxymacs--build-auth-entry https-proxy-host-port user-pass)
+              auth-storage)))
     (setq url-http-proxy-basic-auth-storage (nreverse auth-storage))))
 
 (defun proxymacs--disable-http ()
@@ -281,7 +284,7 @@ For example:
   "Configure proxies based on `proxymacs-proxy-type'."
   (pcase proxymacs-proxy-type
     ('nil
-     (proxymacs--verbose-message "Proxy configuration is nil (doing nothing)."))
+     (user-error "[proxymacs] No proxy type configured. Set `proxymacs-proxy-type' to `http' or `socks'"))
     ('http
      (proxymacs--enable-http)
      (proxymacs--verbose-message "Proxy configuration enabled."))
@@ -289,7 +292,8 @@ For example:
      (proxymacs--enable-socks)
      (proxymacs--verbose-message "Proxy configuration enabled."))
     (_
-     (user-error "[proxymacs] Unknown proxy type: %s" proxymacs-proxy-type))))
+     (user-error "[proxymacs] Invalid `proxymacs-proxy-type': %S (expected `http' or `socks')"
+                 proxymacs-proxy-type))))
 
 (defun proxymacs--disable ()
   "Disable HTTP, HTTPS, and SOCKS proxies."

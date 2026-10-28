@@ -13,14 +13,9 @@ The **[proxymacs](https://github.com/jamescherti/proxymacs.el)** Emacs package s
 ### HTTP and HTTPS Proxy
 ```elisp
 (setq proxymacs-proxy-type 'http) ; 'http is the default
-(setq proxymacs-host "127.0.0.1")
-(setq proxymacs-port 3128) ; accepts integer or string
-(setq proxymacs-no-proxy "^\\(localhost\\|127.0.0.1\\|10\\..*\\|192\\.168\\..*\\)")
-
-;; Optional HTTP-specific overrides (overrides `proxymacs-host`, `proxymacs-port`, and `proxymacs-no-proxy`):
-;; (setq proxymacs-http-host "127.0.0.1")
-;; (setq proxymacs-http-port 3128)
-;; (setq proxymacs-http-no-proxy "^\\(localhost\\|127.0.0.1\\|10\\..*\\|192\\.168\\..*\\)")
+(setq proxymacs-http-host "127.0.0.1")
+(setq proxymacs-http-port 3128) ; accepts integer or string
+(setq proxymacs-http-no-proxy "^\\(localhost\\|127.0.0.1\\|10\\..*\\|192\\.168\\..*\\)")
 
 ;; Optional HTTPS configuration (falls back to HTTP or global host and port when nil):
 ;; (setq proxymacs-https-host "127.0.0.1")
@@ -39,15 +34,10 @@ The **[proxymacs](https://github.com/jamescherti/proxymacs.el)** Emacs package s
 
 ```elisp
 (setq proxymacs-proxy-type 'socks)
-(setq proxymacs-host "127.0.0.1")
-(setq proxymacs-port 1080) ; accepts integer or string
+(setq proxymacs-socks-host "127.0.0.1")
+(setq proxymacs-socks-port 1080) ; accepts integer or string
 (setq proxymacs-socks-version 5) ; 5 or 4
 (setq proxymacs-no-proxy "^\\(localhost\\|127.0.0.1\\|10\\..*\\|192\\.168\\..*\\)")
-
-;; Optional SOCKS-specific overrides (overrides `proxymacs-host`, `proxymacs-port`, and `proxymacs-no-proxy`):
-;; (setq proxymacs-socks-host "127.0.0.1")
-;; (setq proxymacs-socks-port 1080)
-;; (setq proxymacs-socks-no-proxy "^\\(localhost\\|127.0.0.1\\|10\\..*\\|192\\.168\\..*\\)")
 
 ;; Optional authentication:
 ;; (setq proxymacs-socks-user "my_user")
