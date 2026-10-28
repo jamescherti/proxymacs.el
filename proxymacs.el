@@ -36,9 +36,10 @@
           :tag "Github"
           "https://github.com/jamescherti/proxymacs.el"))
 
-(defcustom proxymacs-proxy-type 'http
+(defcustom proxymacs-proxy-type nil
   "The active proxy type."
-  :type '(choice (const :tag "HTTP and HTTPS proxy" http)
+  :type '(choice (const :tag "None" nil)
+                 (const :tag "HTTP and HTTPS proxy" http)
                  (const :tag "SOCKS proxy" socks))
   :group 'proxymacs)
 
@@ -280,13 +281,16 @@ For example:
 (defun proxymacs--enable ()
   "Configure proxies based on `proxymacs-proxy-type'."
   (pcase proxymacs-proxy-type
+    ('nil
+     (proxymacs--verbose-message "Proxy configuration is nil (doing nothing)."))
     ('http
-     (proxymacs--enable-http))
+     (proxymacs--enable-http)
+     (proxymacs--verbose-message "Proxy configuration enabled."))
     ('socks
-     (proxymacs--enable-socks))
+     (proxymacs--enable-socks)
+     (proxymacs--verbose-message "Proxy configuration enabled."))
     (_
-     (user-error "[proxymacs] Unknown proxy type: %s" proxymacs-proxy-type)))
-  (proxymacs--verbose-message "Proxy configuration enabled."))
+     (user-error "[proxymacs] Unknown proxy type: %s" proxymacs-proxy-type))))
 
 (defun proxymacs--disable ()
   "Disable HTTP, HTTPS, and SOCKS proxies."
@@ -302,7 +306,6 @@ For example:
   :group 'proxymacs
   (if proxymacs-mode
       (proxymacs--enable)
-    ;; HTTP
     (proxymacs--disable)))
 
 (provide 'proxymacs)
