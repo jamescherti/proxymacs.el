@@ -27,11 +27,6 @@ The **[proxymacs](https://github.com/jamescherti/proxymacs.el)** Emacs package s
 ;; (setq proxymacs-http-user "my_user")
 ;; (setq proxymacs-http-password "my_password")
 
-;; Optional HTTPS authentication (each nil value falls back to its HTTP equivalent):
-;; (setq proxymacs-https-realm "https_proxy")
-;; (setq proxymacs-https-user "my_https_user")
-;; (setq proxymacs-https-password "my_https_password")
-
 ;; Enable the proxymacs mode
 (proxymacs-mode)
 ```
