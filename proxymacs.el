@@ -23,8 +23,9 @@
 ;; along with GNU Emacs.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;; An Emacs Lisp package that simplifies HTTP, HTTPS, and SOCKS proxy
-;; configuration.
+;; The proxymacs Emacs package simplifies HTTP, HTTPS, and SOCKS proxy
+;; configuration. It supports HTTP/HTTPS proxies and SOCKS4, SOCKS4a, and
+;; SOCKS5.
 
 ;;; Code:
 

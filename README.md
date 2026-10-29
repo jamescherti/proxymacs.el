@@ -1,4 +1,4 @@
-# proxymacs.el - Emacs proxy configuration
+# proxymacs.el - An Emacs package for configuring HTTP, HTTPS, and SOCKS proxies with optional authentication
 ![Build Status](https://github.com/jamescherti/proxymacs.el/actions/workflows/melpazoid.yml/badge.svg)
 ![License](https://img.shields.io/github/license/jamescherti/proxymacs.el)
 ![](https://jamescherti.com/misc/made-for-gnu-emacs.svg)
