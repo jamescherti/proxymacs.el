@@ -1,6 +1,6 @@
 ;;; proxymacs.el --- HTTP/HTTPS or SOCKS proxy configuration -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2026 James Cherti
+;; Copyright (C) 2026 James Cherti | https://www.jamescherti.com/contact/
 
 ;; Author: James Cherti <https://www.jamescherti.com/contact/>
 ;; Version: 0.9.9
