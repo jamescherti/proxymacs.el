@@ -8,6 +8,8 @@
 
 The **[proxymacs](https://github.com/jamescherti/proxymacs.el)** Emacs package simplifies HTTP, HTTPS, and SOCKS proxy configuration. It supports HTTP/HTTPS proxies and SOCKS4, SOCKS4a, and SOCKS5.
 
+**Note: If this project helps your workflow, please consider supporting the project by ⭐ starring it on GitHub and sharing it on your website, blog, Mastodon, Reddit, X, LinkedIn, or other social media platforms so other Emacs users can discover its benefits.**
+
 ## Usage
 
 ### HTTP and HTTPS Proxy
