@@ -4,7 +4,7 @@
 ![](https://jamescherti.com/misc/made-for-gnu-emacs.svg)
 
 - Author: James Cherti <[https://www.jamescherti.com/](https://www.jamescherti.com/)>
-- License: GPL
+- License: GPL 3.0 or later
 
 The **[proxymacs](https://github.com/jamescherti/proxymacs.el)** Emacs package simplifies HTTP, HTTPS, and SOCKS proxy configuration. It supports HTTP/HTTPS proxies and SOCKS4, SOCKS4a, and SOCKS5.
 
